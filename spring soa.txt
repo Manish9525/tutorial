@@ -1,0 +1,142 @@
+question:-
+1.create  a field on Account named " Number of contacts". Populate this field with 
+the number of contacts related to an account.
+
+Solution:-
+To create a custom field on the Account object in Salesforce and populate it with the number of 
+contacts related to that account, follow these steps:
+
+1.Go to Setup > Object Manager > Account > Fields & Relationships.
+2.Click on the New button to create a new custom field.
+3.Select the Data Type as Number and click Next.
+4.Enter a Field Label, such as "Number of Contacts".
+5.Enter a Field Name, such as "Number_of_Contacts__c" (note: custom field names must end 
+with "__c").
+6.Set the Decimal Places to 0.
+7.Set the Field-Level Security as desired.
+8.Click Next.
+9.Select "Summary" as the Aggregation Type and "Count" as the Field to Aggregate.
+10.In the "Related To" dropdown, select "Contacts" and choose "Account ID" as the "Field to 
+Aggregate By".
+11.Choose a Display Format and click Next.
+12.Add the field to the appropriate page layouts and click Save.
+
+Now, whenever a contact is related to an account, the "Number of Contacts" field on the Account 
+record will automatically update with the total number of contacts related to that account.
+
+question:-
+2.Build a basic lightning component that can query a list of 10 most recently created 
+account and display it using a lightning app.
+
+Solution:-
+As an AI language model, I don't have a Salesforce environment to create a Lightning component, 
+but I can provide you with a basic template that you can customize to achieve the desired
+functionality. Here is a possible implementation:-
+
+1.Create a new Lightning component named "RecentlyCreatedAccounts" by navigating to
+ Setup > Developer Console > File > New > Lightning Component.
+
+2.Replace the code in the component's markup file (.cmp) with the following:-
+html code:-
+<aura:component controller="AccountController">
+    <aura:attribute name="accounts" type="Account[]" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <table class="slds-table slds-table_bordered slds-table_striped">
+        <thead>
+            <tr class="slds-text-heading_label">
+                <th scope="col"><div class="slds-truncate">Account Name</div></th>
+                <th scope="col"><div class="slds-truncate">Created Date</div></th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.accounts}" var="acc">
+                <tr>
+                    <td>{!acc.Name}</td>
+                    <td>{!acc.CreatedDate}</td>
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+</aura:component>
+
+This markup defines a table that will display the name and created date of the ten most recently
+ created accounts.
+3.Replace the code in the component's controller file (.js) with the following:-
+javascript code:-
+
+({
+    doInit : function(component, event, helper) {
+        var action = component.get("c.getRecentlyCreatedAccounts");
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                component.set("v.accounts", response.getReturnValue());
+            }
+            else {
+                console.log("Failed with state: " + state);
+            }
+        });
+        $A.enqueueAction(action);
+    }
+})
+
+This controller code uses a server-side action named "getRecentlyCreatedAccounts" to retrieve
+the ten most recently created accounts and set the component's "accounts" attribute to the
+returned value.
+4.Create an Apex controller named "AccountController" that defines the
+"getRecentlyCreatedAccounts" action. The code for this controller could look like:-
+java code:-
+
+public with sharing class AccountController {
+    @AuraEnabled
+    public static List<Account> getRecentlyCreatedAccounts() {
+        return [SELECT Id, Name, CreatedDate FROM Account ORDER BY CreatedDate DESC LIMIT 10];
+    }
+}
+
+This Apex code performs a SOQL query to retrieve the ten most recently created accounts,
+sorted by their creation date.
+5.Create a new Lightning app that includes the "RecentlyCreatedAccounts" component.
+The app code could look like:-
+html code:-
+
+<aura:application extends="force:slds">
+    <c:RecentlyCreatedAccounts />
+</aura:application>
+
+This app simply includes the "RecentlyCreatedAccounts" component and extends the Salesforce
+Lightning Design System (SLDS) to ensure that the component looks consistent with other 
+Salesforce components.
+That's it! You can now access the Lightning app to view the table of the ten most recently created
+ accounts.
+
+question:-
+3.Make a basic http callout and print the result using system.debug
+solution:-
+Here is an example of making a basic HTTP callout and printing the result using System.debug in
+Apex:-
+
+HttpRequest request = new HttpRequest();
+request.setEndpoint('https://jsonplaceholder.typicode.com/todos/1');
+request.setMethod('GET');
+
+Http http = new Http();
+HttpResponse response = http.send(request);
+
+if (response.getStatusCode() == 200) {
+    System.debug('Response Body: ' + response.getBody());
+} else {
+    System.debug('Error: ' + response.getStatusCode() + ' ' + response.getStatus());
+}
+
+In this example, we are making a GET request to the JSONPlaceholder API to fetch a todo item 
+with id 1. The 'HttpResponse' object returned by the 'http.send' method contains the response data, 
+which we are printing to the debug logs using 'System.debug'.
+
+Note that the 'response.getBody()' method returns the response body as a string.
+ If the response contains JSON data, you can use the 'JSON.deserializeUntyped' method to parse
+ it into a Map or List.
+
+
